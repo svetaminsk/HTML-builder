@@ -27,25 +27,28 @@ fsPromises.mkdir(dirMainAssets, { recursive: true }, (error) => {
 fs.readdir(dirAddAssets, { withFileTypes: true }, function (error, items) {
   for (let i = 0; i < items.length; i += 1) {
     if (items[i].isDirectory()) {
-      fsPromises.mkdir(
-        `${dirMainAssets}/${items[i].name}/`,
-        { recursive: true },
-        (error) => {
-          if (error) console.log(error);
-        },
-      );
-      fs.readdir(
-        `${dirAddAssets}/${items[i].name}`,
-        { withFileTypes: true },
-        function (error, items2) {
-          for (let j = 0; j < items2.length; j += 1) {
-            fsPromises.copyFile(
-              dirAddAssets + items[i].name + '/' + items2[j].name,
-              dirMainAssets + items[i].name + '/' + items2[j].name,
-            );
-          }
-        },
-      );
+      fsPromises
+        .mkdir(
+          `${dirMainAssets}/${items[i].name}/`,
+          { recursive: true },
+          (error) => {
+            if (error) console.log(error);
+          },
+        )
+        .then(() => {
+          fs.readdir(
+            `${dirAddAssets}/${items[i].name}`,
+            { withFileTypes: true },
+            function (error, items2) {
+              for (let j = 0; j < items2.length; j += 1) {
+                fsPromises.copyFile(
+                  dirAddAssets + items[i].name + '/' + items2[j].name,
+                  dirMainAssets + items[i].name + '/' + items2[j].name,
+                );
+              }
+            },
+          );
+        });
     }
   }
 });
