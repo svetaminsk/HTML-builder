@@ -2,33 +2,20 @@ const fs = require('fs');
 const path = require('path');
 
 const styleFolder = path.join(__dirname, 'styles');
-const distFolder =
-  path.join(__dirname, 'project-dist/bundle.css') ||
-  fs.writeFile('./05-merge-styles/project-dist/bundle.css');
+const distFolder = fs.createWriteStream(
+  path.join(__dirname, 'project-dist/bundle.css'),
+);
 
-fs.readdir(styleFolder, (error, data) => {
-  if (error) {
-    console.error(error);
-  }
-  fs.unlink(distFolder, () => {});
-  data.forEach((element) => {
-    if (error) {
-      console.error(error);
-    }
-    if (path.extname(element) === '.css') {
-      fs.readFile(
-        path.join('05-merge-styles', 'styles', element),
-        (error, data) => {
-          if (error) {
-            console.error(error);
-          }
-          fs.appendFile(distFolder, data, (error) => {
-            if (error) {
-              console.error(error);
-            }
-          });
-        },
-      );
-    }
+fs.readdir(styleFolder, (error, files) => {
+  files.forEach((item) => {
+    fs.stat(styleFolder + '/' + item, (error, stats) => {
+      if (stats.isFile() && path.extname(item) === '.css') {
+        fs.readFile(styleFolder + '/' + item, 'utf-8', (error, data) => {
+          if (error) throw error;
+          distFolder.write(data);
+        });
+        if (error) throw error;
+      }
+    });
   });
 });

@@ -15,7 +15,7 @@ fs.readdir(file, { withFileTypes: true }, (error, files) => {
             console.log(
               `${current[0]} -  ${path.extname(item.name).slice(1)} - ${
                 stats.size / 1000
-              } kb`,
+              }kb`,
             );
           }
         });
